@@ -1,0 +1,19 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "description": "chat library",
+  "main": "main.js",
+  "dependencies": {
+    "express": "*",
+    "mysql": "*",
+    "mysql-connection-manager": "*",
+    "socket.io": "*",
+	"fs":"0.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "appster",
+  "license": "ISC"
+}
