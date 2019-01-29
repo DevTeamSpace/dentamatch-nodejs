@@ -12,13 +12,13 @@ var app         =   express();
 var httpsserver      =   require('https');//.Server(app);
 var fs          =   require('fs');
 var options = {
-    key: fs.readFileSync('/etc/ssl/private/dentamatch.key','utf8'),
-    cert: fs.readFileSync('/etc/ssl/certs/dentamatch-bundle.crt','utf8')
+    key: fs.readFileSync('/etc/ssl/private/dentamatch19.key','utf8'),
+    cert: fs.readFileSync('/etc/ssl/certs/dentamatch-bundle19.crt','utf8')
 };
 
-var server = httpsserver.createServer(options,app);
+var server = httpsserver.createServer(options,app);//.listen(8443);
 
-var socketio    =   require('socket.io')(server,{ origins: '*:*', pingInterval:2000, pingTimeout:4000});
+var socketio    =   require('socket.io')(server,{ origins: '*:*', pingInterval:2000});//,pingTimeout:4000
 var mysql       =   require("mysql");
 var MySQLCM     =   require('mysql-connection-manager');
 //var fs          =   require('fs');
@@ -77,6 +77,7 @@ function pad(n) {
 con.connect(function(err){
   if(err){
     console.log('Error connecting to Db');
+console.log(err);
     return;
   }
   console.log('Database connection established');
@@ -97,8 +98,8 @@ socketio.on('connection', function (socket) {
             userInfo[data.userId]   =   objUser;
             console.log(userInfo);
 	if(socketByUser[data.userId] && socket.id!=socketByUser[data.userId].id){
-		console.log('previous session logout calling '+data.userId);
-                socketByUser[data.userId].emit('logoutPreviousSession',{logout:true});
+                console.log('previous session logout calling '+data.userId);
+		socketByUser[data.userId].emit('logoutPreviousSession',{logout:true});
             }    
         socketByUser[data.userId]   =   socket;
             userBySocket[socket.id]     =   data.userId;
@@ -349,9 +350,9 @@ socketio.on('connection', function (socket) {
     
     //automatically/manually triggered when user socket connection is disconnected. And clear all information related to this socket
     socket.on('disconnect', function()  {
-        
         var user    =   userBySocket[socket.id];
-        console.log(user);
+        if(socketByUser[user] && socket.id==socketByUser[user].id){
+	console.log(user); console.log('disconnect');
         if(typeof(userInfo[user])!= 'undefined')
             var userName    =   userInfo[user].userName;
         else
@@ -365,9 +366,10 @@ socketio.on('connection', function (socket) {
         console.log(userInfo);
 //        console.log(socketByUser);
   //      console.log(userBySocket);
+	}
     });
 });
 
-server.listen(config.port, function () {
+server.listen(config.port, function () {console.log(config.port);
     console.log('Example app listening on port 3000!');
 });
